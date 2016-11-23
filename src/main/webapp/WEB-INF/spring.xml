@@ -3,8 +3,8 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:tx="http://www.springframework.org/schema/tx"
-	   xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mongo="http://www.springframework.org/schema/c"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans.xsd
            http://www.springframework.org/schema/context  
            http://www.springframework.org/schema/context/spring-context.xsd
@@ -13,7 +13,36 @@
 			http://www.springframework.org/schema/aop
            http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+	<context:annotation-config />
+	<!-- 获取配置文件属性 -->
+	<bean id="placeholderConfig"
+		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>/WEB-INF/db.properties</value>
+		</property>
+	</bean>
+	<!--<bean class="cn.mongo.util.SpringContextUtil"></bean>-->
 
+	<mongo:mongo id="mongo"  replica-set="${mongo.replicaSet}">
+	<mongo:options
+			connections-per-host="${mongo.connectionsPerHost}"
+			threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+			connect-timeout="${mongo.connectTimeout}"
+			max-wait-time="${mongo.maxWaitTime}"
+			auto-connect-retry="${mongo.autoConnectRetry}"
+			socket-keep-alive="${mongo.socketKeepAlive}"
+			socket-timeout="${mongo.socketTimeout}"
+			slave-ok="${mongo.slaveOk}"
+			write-number="${mongo.writeNumber}"
+			write-timeout="${mongo.riteTimeout}"
+			write-fsync="${mongo.writeFsync}"/>
+</mongo:mongo>
+		<!-- 设置使用的数据库 名-->
+<mongo:db-factory dbname="test" mongo-ref="mongo"/>
+		<!-- mongodb的模板 -->
+<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+</bean>
 
 
 
